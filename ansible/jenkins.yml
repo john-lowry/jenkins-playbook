@@ -1,0 +1,6 @@
+---
+- hosts: tag_Name_jenkins
+  user: centos
+  roles:
+    - common
+    - jenkins

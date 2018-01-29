@@ -1,0 +1,26 @@
+---
+- name: Update all packages
+  become: yes
+  package:
+    name: "*"
+    state: latest
+
+- name: Install ntp
+  become: yes
+  package:
+    name: ntp
+    state: latest
+ 
+- name: Configure ntp
+  become: yes
+  blockinfile:
+    path: /etc/ntp.conf
+    block: |
+      driftfile /var/lib/ntp/drift
+      restrict default nomodify notrap nopeer noquery
+      restrict 127.0.0.1
+      restrict ::1
+      server 169.254.169.123
+      disable monitor
+  notify: Restart ntp
+...

@@ -1,0 +1,39 @@
+---
+- name: Install Java
+  become: yes
+  package:
+    name: java
+    state: latest
+
+- name: Configure Jenkins repository
+  become: yes
+  yum_repository:
+    baseurl: http://pkg.jenkins.io/redhat
+    description: Jenkins Yum Repository
+    enabled: yes
+    file: jenkins
+    gpgcheck: yes
+    name: Jenkins
+    state: present
+    
+- name: Import Jenkins RPM GPG Key
+  become: yes
+  rpm_key:
+    state: present
+    key: https://pkg.jenkins.io/redhat/jenkins.io.key
+
+- name: Install Jenkins
+  become: yes
+  package:
+    name: jenkins
+    state: latest
+
+- name: Start Jenkins
+  become: yes
+  service:
+    enabled: yes
+    name: jenkins
+    state: started
+
+
+...
