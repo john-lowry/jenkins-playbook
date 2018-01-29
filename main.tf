@@ -123,13 +123,34 @@ resource "aws_key_pair" "jlowry" {
   public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCc9cC2xs+EU8awpCf6eAY7S9IGqL6/r1LpV3r5Lo1NCE9gTPofk+ACMKhxnLRxUdqGs0aMA9k1HngJ5oE5PKp9DkE9ZIjryG7UhPfrvsTnU0Ak+Ltx0cXy/1NoWmMDSckCBdeqONRaxdi9kz6H3DCMeQD8Xu5KafWTlbLgdJveEaEDbWlKF0smpvKieeCW+iBjcqA2ZusDvaBKHQRa4CpcSWiI+fsoJXYItZXZFmNYmDiNL9P1bzwa7MSnHN7gRU2yJy6J3Mil69p3bKI347pxbBVUMBT2bSbj/OP6nr6yP85JF8jlJl7XekabqtRNnDW6rOGApufh/4etCh2yBOQ9"
 }
 
+data "aws_ami" "base" {
+  owners			= ["679593333241"]
+  most_recent			= true
+ 
+  filter {
+    name	= "product-code"
+    values	= ["aw0evgkw8e5c1q413zgy5pjce"]
+   }
+
+  filter {
+    name   = "architecture"
+    values = ["x86_64"]
+  }
+
+  filter {
+    name   = "root-device-type"
+    values = ["ebs"]
+  }
+} 
+
 resource "aws_instance" "bastion" {
   connection {
     user = "centos"
   }
 
   instance_type			= "t2.micro"
-  ami				= "ami-0c2aba6c"
+# ami				= "ami-0c2aba6c"
+  ami				= "${data.aws_ami.base.id}"
   key_name			= "${aws_key_pair.jlowry.id}"
   vpc_security_group_ids	= ["${aws_security_group.bastionhost.id}"]
   subnet_id			= "${aws_subnet.default.id}"
@@ -147,7 +168,8 @@ resource "aws_instance" "jenkins" {
   }
 
   instance_type			= "t2.micro"
-  ami				= "ami-0c2aba6c"
+#  ami				= "ami-0c2aba6c"
+  ami				= "${data.aws_ami.base.id}"
   key_name			= "${aws_key_pair.jlowry.id}"
   vpc_security_group_ids	= ["${aws_security_group.basic.id}"]
   subnet_id			= "${aws_subnet.default.id}"
